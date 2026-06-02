@@ -251,13 +251,13 @@ function Hero() {
         backgroundSize: '60px 60px',
       }} />
 
-      <div style={{
+      <div className="hero-grid" style={{
         maxWidth: '1200px', margin: '0 auto', padding: '80px 24px',
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center',
         position: 'relative', zIndex: 1,
       }}>
         {/* Left */}
-        <div style={{ animation: 'fadeInLeft 0.9s ease' }}>
+        <div className="hero-left" style={{ animation: 'fadeInLeft 0.9s ease' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.4)',
@@ -360,7 +360,7 @@ function Hero() {
         </div>
 
         {/* Right — floating cards */}
-        <div style={{
+        <div className="hero-right" style={{
           position: 'relative', height: '520px',
           animation: 'fadeInRight 0.9s 0.2s ease both',
         }}>
@@ -437,7 +437,30 @@ function Hero() {
 
       <style>{`
         @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            padding: 40px 20px 60px !important;
+            gap: 40px !important;
+            text-align: center;
+          }
+          .hero-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .hero-left p {
+            text-align: center;
+          }
+          .hero-left > div:last-child {
+            justify-content: center;
+          }
+          .hero-right {
+            height: 300px !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .hero-right { display: none !important; }
+          .hero-grid { padding: 32px 16px 48px !important; }
         }
       `}</style>
     </section>
