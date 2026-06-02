@@ -4,7 +4,7 @@ import fs from 'fs'
 
 const TOKEN = '8645802935:AAHJo1WAGk4piK1-nyKf2IJYE2CE3fore-Y'
 const PORT = process.env.PORT || 3001
-const WEBHOOK_URL = process.env.WEBHOOK_URL // Render'da: https://zuhrstar-bot.onrender.com
+const WEBHOOK_URL = process.env.PORT ? 'https://zuhrstar-bot.onrender.com' : null
 const ADMINS_FILE = './admins.json'
 
 /* ── Admin ma'lumotlari ── */
