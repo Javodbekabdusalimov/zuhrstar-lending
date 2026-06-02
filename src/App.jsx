@@ -1070,12 +1070,62 @@ function Testimonials() {
 
   return (
     <section id="testimonials" ref={ref} style={{
-      padding: '100px 24px',
+      padding: 'clamp(60px,8vw,100px) 16px',
       background: 'linear-gradient(180deg, #eff6ff 0%, #fff 100%)',
     }}>
+      <style>{`
+        .test-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+        @media (max-width: 640px) {
+          .test-grid { grid-template-columns: 1fr; gap: 16px; }
+        }
+        @media (min-width: 1024px) {
+          .test-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .test-card {
+          background: #fff;
+          border-radius: 20px;
+          padding: 24px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+          border: 1px solid rgba(0,0,0,0.06);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        .test-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        }
+        .test-footer {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+          margin-top: auto;
+          padding-top: 20px;
+          border-top: 1px solid #f1f5f9;
+        }
+        .test-badge {
+          margin-left: auto;
+          white-space: nowrap;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 100px;
+        }
+        @media (max-width: 400px) {
+          .test-badge { margin-left: 0; }
+        }
+      `}</style>
+
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{
-          textAlign: 'center', marginBottom: '64px',
+          textAlign: 'center', marginBottom: 'clamp(36px,5vw,64px)',
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0)' : 'translateY(30px)',
           transition: 'opacity 0.7s ease, transform 0.7s ease',
@@ -1087,7 +1137,7 @@ function Testimonials() {
             border: '1px solid #bfdbfe',
           }}>TALABALAR FIKRI</div>
           <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 48px)',
+            fontSize: 'clamp(24px, 4vw, 48px)',
             fontWeight: 900, color: '#0f172a', letterSpacing: '-1px', lineHeight: 1.15,
           }}>
             Bizning{' '}
@@ -1096,66 +1146,53 @@ function Testimonials() {
           </h2>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '24px',
-        }}>
+        <div className="test-grid">
           {reviews.map((r, i) => (
-            <div key={r.name} style={{
-              background: '#fff',
-              borderRadius: '24px', padding: '28px',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
-              border: '1px solid rgba(0,0,0,0.06)',
-              transition: 'all 0.3s ease',
-              position: 'relative', overflow: 'hidden',
+            <div key={r.name} className="test-card" style={{
               opacity: visible ? 1 : 0,
               transform: visible ? 'translateY(0)' : 'translateY(40px)',
-              transitionDelay: `${i * 0.1}s`,
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-8px)'
-              e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.12)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.07)'
-            }}
-            >
+              transition: `opacity 0.6s ${i * 0.1}s ease, transform 0.6s ${i * 0.1}s ease, box-shadow 0.3s ease`,
+            }}>
               {/* Quote mark */}
               <div style={{
-                position: 'absolute', top: '20px', right: '24px',
-                fontSize: '64px', color: '#dbeafe', fontFamily: 'Georgia, serif',
-                lineHeight: 1, pointerEvents: 'none',
+                position: 'absolute', top: '16px', right: '20px',
+                fontSize: '56px', color: '#dbeafe', fontFamily: 'Georgia, serif',
+                lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
               }}>"</div>
 
               {/* Stars */}
-              <div style={{ color: '#f59e0b', fontSize: '18px', marginBottom: '16px' }}>
+              <div style={{ color: '#f59e0b', fontSize: '16px', marginBottom: '12px' }}>
                 {'★'.repeat(r.stars)}
               </div>
 
-              <p style={{ color: '#374151', fontSize: '14px', lineHeight: 1.8, marginBottom: '24px', position: 'relative', zIndex: 1 }}>
+              <p style={{
+                color: '#374151', fontSize: 'clamp(13px,1.2vw,14px)',
+                lineHeight: 1.8, marginBottom: '0',
+                position: 'relative', zIndex: 1, flexGrow: 1,
+              }}>
                 "{r.text}"
               </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="test-footer">
                 <img src={r.img} alt={r.name} style={{
-                  width: '48px', height: '48px', borderRadius: '50%',
-                  objectFit: 'cover', border: '3px solid #dbeafe',
+                  width: '44px', height: '44px', borderRadius: '50%',
+                  objectFit: 'cover', border: '3px solid #dbeafe', flexShrink: 0,
                 }} />
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{r.name}</div>
-                  <div style={{ fontSize: '12px', color: '#6b7280' }}>{r.role}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{
+                    fontWeight: 700, fontSize: '14px', color: '#0f172a',
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>{r.name}</div>
+                  <div style={{
+                    fontSize: '11px', color: '#6b7280',
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>{r.role}</div>
                 </div>
-                <div style={{ marginLeft: 'auto' }}>
-                  <span style={{
-                    background: `${r.badgeColor}15`,
-                    color: r.badgeColor,
-                    fontSize: '11px', fontWeight: 700,
-                    padding: '4px 10px', borderRadius: '100px',
-                    border: `1px solid ${r.badgeColor}33`,
-                  }}>{r.badge}</span>
-                </div>
+                <span className="test-badge" style={{
+                  background: `${r.badgeColor}15`,
+                  color: r.badgeColor,
+                  border: `1px solid ${r.badgeColor}33`,
+                }}>{r.badge}</span>
               </div>
             </div>
           ))}
