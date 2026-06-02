@@ -1,0 +1,20 @@
+services:
+  # ── Telegram bot + API server ──
+  - type: web
+    name: zuhrstar-bot
+    env: node
+    buildCommand: npm install
+    startCommand: node bot.js
+    envVars:
+      - key: WEBHOOK_URL
+        value: https://zuhrstar-bot.onrender.com
+
+  # ── Landing page (static) ──
+  - type: web
+    name: zuhrstar-landing
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_BOT_URL
+        value: https://zuhrstar-bot.onrender.com

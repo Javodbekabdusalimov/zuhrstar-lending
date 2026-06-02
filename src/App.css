@@ -1,0 +1,5 @@
+/* App-level reset — all styling is component-level */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
