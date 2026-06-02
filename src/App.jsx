@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 /* ─── Ariza yuborish — bot serveriga ── */
-const BOT_URL = 'https://zuhrstar-bot.onrender.com'
+const BOT_URL = ''
 
 async function sendToTelegram(name, phone, course) {
   const res = await fetch(`${BOT_URL}/register`, {

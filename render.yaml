@@ -1,12 +1,6 @@
 services:
   - type: web
-    name: zuhrstar-bot
+    name: zuhrstar-lending
     env: node
-    buildCommand: npm install
-    startCommand: node bot.js
-
-  - type: web
-    name: zuhrstar-landing
-    env: static
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    startCommand: node bot.js

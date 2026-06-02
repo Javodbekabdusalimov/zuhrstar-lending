@@ -1,10 +1,13 @@
 import TelegramBot from 'node-telegram-bot-api'
 import http from 'http'
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TOKEN = '8645802935:AAHJo1WAGk4piK1-nyKf2IJYE2CE3fore-Y'
 const PORT = process.env.PORT || 3001
-const WEBHOOK_URL = process.env.PORT ? 'https://zuhrstar-bot.onrender.com' : null
+const RENDER_URL = 'https://zuhrstar-lending.onrender.com'
 const ADMINS_FILE = './admins.json'
 
 /* ── Admin ma'lumotlari ── */
@@ -20,12 +23,33 @@ function activeAdmins() {
   return loadAdmins().filter(a => Date.now() < new Date(a.expires).getTime())
 }
 
-/* ── Bot: webhook (Render) yoki polling (lokal) ── */
-const bot = WEBHOOK_URL
+/* ── Static fayl serve ── */
+const MIME = {
+  '.html': 'text/html',
+  '.js':   'application/javascript',
+  '.css':  'text/css',
+  '.svg':  'image/svg+xml',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
+  '.ico':  'image/x-icon',
+  '.woff2':'font/woff2',
+}
+
+function serveStatic(req, res) {
+  const distDir = path.join(__dirname, 'dist')
+  let filePath = path.join(distDir, req.url === '/' ? 'index.html' : req.url)
+  if (!fs.existsSync(filePath)) filePath = path.join(distDir, 'index.html')
+  const ext = path.extname(filePath)
+  res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' })
+  fs.createReadStream(filePath).pipe(res)
+}
+
+/* ── Bot ── */
+const IS_PROD = !!process.env.PORT
+const bot = IS_PROD
   ? new TelegramBot(TOKEN)
   : new TelegramBot(TOKEN, { polling: true })
 
-/* ── Handlerlar ── */
 const sessions = {}
 
 bot.onText(/\/start/, async (msg) => {
@@ -70,7 +94,6 @@ bot.on('message', async (msg) => {
       `✅ Login: \`${s.login}\`\n\nEndi *parol* kiriting (kamida 6 belgi):`,
       { parse_mode: 'Markdown' }
     )
-
   } else if (s.step === 'password') {
     if (text.trim().length < 6) {
       await bot.sendMessage(chatId, '❌ Parol kamida 6 belgi. Qaytadan:')
@@ -108,7 +131,6 @@ bot.on('callback_query', async (query) => {
     all.push({ chatId, login: s.login, password: s.password, expires })
     saveAdmins(all)
     delete sessions[chatId]
-
     await bot.sendMessage(chatId,
       `🎉 *Muvaffaqiyatli!*\n\n` +
       `👤 Login: \`${s.login}\`\n` +
@@ -117,7 +139,6 @@ bot.on('callback_query', async (query) => {
       `✅ Endi saytdagi barcha arizalar to'g'ridan-to'g'ri sizga keladi!`,
       { parse_mode: 'Markdown' }
     )
-
   } else if (query.data === 'cancel_reg') {
     delete sessions[chatId]
     await bot.sendMessage(chatId, '❌ Bekor qilindi. /start bosing.')
@@ -134,7 +155,7 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'OPTIONS') { res.writeHead(200); res.end(); return }
 
-  // Telegram webhook endpoint
+  // Telegram webhook
   if (req.method === 'POST' && req.url === `/bot${TOKEN}`) {
     let body = ''
     req.on('data', c => body += c)
@@ -145,7 +166,7 @@ const server = http.createServer((req, res) => {
     return
   }
 
-  // Sayt formasi — ariza keladi
+  // Form ariza
   if (req.method === 'POST' && req.url === '/register') {
     let body = ''
     req.on('data', c => body += c)
@@ -153,17 +174,14 @@ const server = http.createServer((req, res) => {
       try {
         const { name, phone, course } = JSON.parse(body)
         const admins = activeAdmins()
-
         const text =
           `📋 *Yangi ariza — ZuhrStar sayt!*\n\n` +
           `👤 Ism: *${name || '—'}*\n` +
           `📱 Telefon: *${phone || '—'}*\n` +
           `📚 Yo'nalish: *${course || "Ko'rsatilmagan"}*`
-
         await Promise.all(admins.map(a =>
           bot.sendMessage(a.chatId, text, { parse_mode: 'Markdown' })
         ))
-
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ ok: true }))
       } catch (e) {
@@ -174,10 +192,9 @@ const server = http.createServer((req, res) => {
     return
   }
 
-  // Health check — Render servisni tirik deb biladi
+  // Sayt sahifalari
   if (req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.end('ZuhrStar Bot OK')
+    serveStatic(req, res)
     return
   }
 
@@ -186,9 +203,13 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, async () => {
   console.log(`✅ Server port ${PORT} da ishlamoqda`)
-  if (WEBHOOK_URL) {
-    await bot.setWebHook(`${WEBHOOK_URL}/bot${TOKEN}`)
-    console.log(`🔗 Webhook: ${WEBHOOK_URL}/bot${TOKEN}`)
+  if (IS_PROD) {
+    try {
+      await bot.setWebHook(`${RENDER_URL}/bot${TOKEN}`)
+      console.log(`🔗 Webhook o'rnatildi`)
+    } catch (e) {
+      console.error('Webhook xato:', e.message)
+    }
   } else {
     console.log('🔄 Polling rejimida (lokal)')
   }
