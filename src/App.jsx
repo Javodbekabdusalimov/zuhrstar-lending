@@ -1435,8 +1435,8 @@ function Contact() {
 function Map() {
   const [ref, visible] = useInView()
   const address = "Toshkent viloyati, Qibray tumani, Shodlik MFY, Alisher Navoiy ko'chasi, 7"
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=41.3779,69.3622`
-  const yandexUrl = `https://yandex.uz/maps/?ll=69.3622%2C41.3779&z=16&pt=69.3622%2C41.3779,pm2rdl`
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=41.388231,69.458631`
+  const yandexUrl = `https://yandex.uz/maps/org/zuhrstar_it_education/19482222114/`
 
   return (
     <section ref={ref} style={{ padding: '80px 24px 0', background: '#fff' }}>
@@ -1478,7 +1478,7 @@ function Map() {
         }}>
           <iframe
             title="ZuhrStar IT School manzili"
-            src="https://yandex.uz/map-widget/v1/?ll=69.3622%2C41.3779&z=16&pt=69.3622%2C41.3779,pm2rdl&l=map&text=Qibray%20tumani%2C%20Shodlik%20MFY%2C%20Alisher%20Navoiy%20ko%27chasi%2C%207"
+            src="https://yandex.uz/map-widget/v1/org/zuhrstar_it_education/19482222114/?ll=69.458631%2C41.388231&z=15"
             width="100%"
             height="420"
             style={{ border: 0, display: 'block' }}
